@@ -19,16 +19,14 @@ function onMessageHandler (target, context, msg, self) {
   const commandName = msg.trim();
   if (commandName == "ab"){console.log(commandName);}
 
-  // If the command is known, let's execute it
+  // If the command is known, execute it
   if (commandName === '!command' || commandName === "!commands") {
     client.say(target, `Supported commands: !cat !emote`);
     console.log(`* Executed ${commandName} command`);
   } else if (commandName === "!cat" || commandName === "!cats") {
-    client.say(target, "Learn about my custom made bongo cat crew at: github.com/CoroboBred/Bongo-Cat-Crew")
+    client.say(target, "The Bongo Cat overlay was made by me! It's still a WIP but you can learn about my custom made bongo cat crew at github.com/CoroboBred/Bongo-Cat-Crew")
   } else if (commandName == "!emote" || commandName === "!emotes"){
       client.say( target, "catJAM blobDance bongoTap pepeJAM HYPERS ppJedi AYAYA")
-  } else {
-    console.log(`* Unknown command ${commandName}`);
   }
 }
 
