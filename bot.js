@@ -10,7 +10,7 @@ let staticCommands = require('./commands.json');
 
 let dynamicCommands = new Map();
 dynamicCommands.set("!command", function(target, args){
-  client.say(target, "Supported commands: " + JSONKeysToString(staticCommands) + ' ' + mapKeysToString(dynamicCommands) + ' ' + mapKeysToString(runtimeCommands));
+  client.say(target, JSONKeysToString(staticCommands) + ' ' + mapKeysToString(dynamicCommands) + ' ' + mapKeysToString(runtimeCommands));
 });
 
 let dynamicPrivilegedCommands = new Map();
@@ -23,8 +23,8 @@ dynamicPrivilegedCommands.set("!add", function(target, args){
 dynamicPrivilegedCommands.set('!custom', function(target, args){
   client.say(target, 'To add a custom commands to my channel just type "!add !<newCommand> <desired response>". You have have to be a mod for this to work.');
 });
-dynamicPrivilegedCommands.set("!modCommand", function(target, args){
-    client.say(target, "Supported Mod Commands: " + mapKeysToString(dynamicPrivilegedCommands));
+dynamicPrivilegedCommands.set("!modcommand", function(target, args){
+    client.say(target, mapKeysToString(dynamicPrivilegedCommands));
 });
 
 
@@ -44,8 +44,12 @@ function onMessageHandler (target, context, msg, self) {
   // Remove whitespace from chat message and split by spaces
   const split = msg.trim().split(" ");
 
+  let command = split[0].toLowerCase();
+  // Remove pluralization.
+  if (command.charAt(command.length -1) == 's'){
+    command = command.substring(0, command.length -1);
+  }
   // If the command is known, execute it
-  const command = split[0];
   if (split.length == 1){
     if(staticCommands.hasOwnProperty(command)){
       client.say(target, staticCommands[command]);
@@ -57,7 +61,6 @@ function onMessageHandler (target, context, msg, self) {
   if (dynamicCommands.has(command)){
     dynamicCommands.get(command)(target, split.slice(1));
   }
-
 
   if (context['badges']["broadcaster"] != '1' && context['badges']['moderator'] != '1'){
     return;
