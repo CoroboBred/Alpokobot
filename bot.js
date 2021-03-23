@@ -6,14 +6,11 @@ const client = new tmi.client(config);
 
 let runtimeCommands = new Map();
 
-let staticCommands = new Map();
-staticCommands.set('!cat', 'The Bongo Cat overlay was made by me! Download v1.0 at github.com/CoroboBred/Bongo-Cat-Crew');
-staticCommands.set('!emote', 'catJAM blobDance bongoTap pepeJAM HYPERS ppJedi AYAYA');
-staticCommands.set('!bot', 'Like this bot? Add it to your channel: github.com/CoroboBred/Alpokobot');
+let staticCommands = require('./commands.json');
 
 let dynamicCommands = new Map();
 dynamicCommands.set("!command", function(target, args){
-  client.say(target, "Supported commands: " + mapKeysToString(staticCommands) + ' ' + mapKeysToString(dynamicCommands) + ' ' + mapKeysToString(runtimeCommands));
+  client.say(target, "Supported commands: " + JSONKeysToString(staticCommands) + ' ' + mapKeysToString(dynamicCommands) + ' ' + mapKeysToString(runtimeCommands));
 });
 
 let dynamicPrivilegedCommands = new Map();
@@ -50,8 +47,8 @@ function onMessageHandler (target, context, msg, self) {
   // If the command is known, execute it
   const command = split[0];
   if (split.length == 1){
-    if(staticCommands.has(command)){
-      client.say(target, staticCommands.get(command))
+    if(staticCommands.hasOwnProperty(command)){
+      client.say(target, staticCommands[command]);
     }else if (runtimeCommands.has(command)){
       client.say(target, `${runtimeCommands.get(command)}`);
     }
@@ -74,6 +71,10 @@ function onMessageHandler (target, context, msg, self) {
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
+}
+
+function JSONKeysToString(obj){
+  return Object.keys(obj).join(' ');
 }
 
 function mapKeysToString(map){
