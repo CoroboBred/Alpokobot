@@ -62,7 +62,7 @@ function onMessageHandler (target, context, msg, self) {
     dynamicCommands.get(command)(target, split.slice(1));
   }
 
-  if (context['badges']["broadcaster"] != '1' && context['badges']['moderator'] != '1'){
+  if (context['badges'] == null || (context['badges']["broadcaster"] != '1' && context['badges']['moderator'] != '1')){
     return;
   }
 
