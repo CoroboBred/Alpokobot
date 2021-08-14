@@ -20,6 +20,15 @@ dynamicPrivilegedCommands.set("!add", function(target, args){
     client.say(target, `Added new command "${args[0]}" with response "${resp}"`);
 });
 
+dynamicPrivilegedCommands.set("!delete", function(target, args){
+    if(!runtimeCommands.has(args[0])){
+      client.say(target, `Cannot delete "${args[0]}" command. It does not exist`);
+      return;
+    }
+    runtimeCommands.delete(args[0]);
+    client.say(target, `Deleted command "${args[0]}"`);
+});
+
 dynamicPrivilegedCommands.set('!custom', function(target, args){
   client.say(target, 'To add a custom commands to my channel just type "!add !<newCommand> <desired response>". You have have to be a mod for this to work.');
 });
