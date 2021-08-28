@@ -1,6 +1,6 @@
 const tmi = require('tmi.js');
 const config = require('./config.json');
-
+const channelName = config['channels'][0];
 // Create a client with our options
 const client = new tmi.client(config);
 
@@ -8,17 +8,51 @@ let runtimeCommands = new Map();
 
 let staticCommands = require('./commands.json');
 
+let restarts = new Map();
+let headpats = new Map();
 let dynamicCommands = new Map();
-dynamicCommands.set("!command", function(target, args){
+dynamicCommands.set("!command", function(context, target, args){
   client.say(target, JSONKeysToString(staticCommands) + ' ' + mapKeysToString(dynamicCommands) + ' ' + mapKeysToString(runtimeCommands));
 });
 
+dynamicCommands.set("!headpat", function(context, target, args){
+  let name = context['display-name'];
+  let pats = 1;
+  let key = `${name}+${args[0]}`;
+  if(headpats.has(key)){
+    pats++;
+  }
+  headpats.set(key, pats);
+  client.say(target, `${name} has headpated ${args[0]}!!! They headpated ${args[0]} ${pats} times!!!!!`);
+});
+
+dynamicCommands.set("!restart", function(context, target, args){
+  if(restarts.has(channelName)){
+    let restartCount = restarts.get(channelName);
+    client.say(target, `${channelName} has restarted ${restartCount} times. Sadge`)
+  } else{
+    client.say(target, `${channelName} hasn't restarted yet! POGGERS`);
+  }
+});
+
 let dynamicPrivilegedCommands = new Map();
+
+dynamicPrivilegedCommands.set("!addrestart", function(target, args){
+  let restartCount = 0;
+  if (restarts.has(channelName)){
+    restartCount = restarts.get(channelName);
+  }
+  restartCount++;
+  restarts.set(channelName, restartCount);
+  client.say(target, `${channelName} has restarted ${restartCount} times. Sadge`);
+});
+
 dynamicPrivilegedCommands.set("!add", function(target, args){
     resp = args.slice(1).join(' ');
     runtimeCommands.set(args[0], resp);
     client.say(target, `Added new command "${args[0]}" with response "${resp}"`);
 });
+
 
 dynamicPrivilegedCommands.set("!delete", function(target, args){
     if(!runtimeCommands.has(args[0])){
@@ -68,7 +102,7 @@ function onMessageHandler (target, context, msg, self) {
   }
 
   if (dynamicCommands.has(command)){
-    dynamicCommands.get(command)(target, split.slice(1));
+    dynamicCommands.get(command)(context, target, split.slice(1));
   }
 
   if (context['badges'] == null || (context['badges']["broadcaster"] != '1' && context['badges']['moderator'] != '1')){
